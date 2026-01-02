@@ -74,6 +74,27 @@ class TripOut(BaseModel):
         from_attributes = True
 
 
+class TripUpdate(BaseModel):
+    """Partial update for a trip - only provided fields will be updated."""
+    trip_date: Optional[date] = None
+    purpose: Optional[str] = Field(default=None, min_length=2, max_length=500)
+
+
+class DistancePreview(BaseModel):
+    """Request for distance preview."""
+    origin: str = Field(min_length=2, max_length=500)
+    destination: str = Field(min_length=2, max_length=500)
+    round_trip: bool = True
+    travel_mode: str = "DRIVE"
+
+
+class DistancePreviewOut(BaseModel):
+    """Response for distance preview."""
+    one_way_km: float
+    total_km: float
+    round_trip: bool
+
+
 class LocationCreate(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     address: str = Field(min_length=2, max_length=500)
@@ -256,6 +277,43 @@ def delete_trip(trip_id: int, db: Session = Depends(get_db)):
     return {"ok": True}
 
 
+@app.patch("/api/trips/{trip_id}", response_model=TripOut)
+def update_trip(trip_id: int, payload: TripUpdate, db: Session = Depends(get_db)):
+    """Partial update of a trip (date and purpose only - distance cannot be changed)."""
+    trip = db.query(Trip).filter(Trip.id == trip_id).first()
+    if not trip:
+        raise HTTPException(status_code=404, detail="Trip not found")
+
+    # Only update provided fields
+    if payload.trip_date is not None:
+        trip.trip_date = payload.trip_date
+    if payload.purpose is not None:
+        trip.purpose = payload.purpose
+
+    db.commit()
+    db.refresh(trip)
+    return trip
+
+
+@app.post("/api/preview-distance", response_model=DistancePreviewOut)
+async def preview_distance(payload: DistancePreview):
+    """Preview distance calculation without saving a trip."""
+    one_way_km = await compute_distance_km(
+        origin=payload.origin,
+        destination=payload.destination,
+        travel_mode=payload.travel_mode,
+        region_code=DEFAULT_REGION_CODE,
+    )
+
+    total_km = one_way_km * 2 if payload.round_trip else one_way_km
+
+    return DistancePreviewOut(
+        one_way_km=round(one_way_km, 1),
+        total_km=round(total_km, 1),
+        round_trip=payload.round_trip,
+    )
+
+
 @app.get("/api/summary", response_model=SummaryOut)
 def summary(year: int = Query(...), db: Session = Depends(get_db)):
     trips = (
@@ -315,6 +373,39 @@ def export_csv(year: int = Query(...), db: Session = Depends(get_db)):
         media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+class CalendarEvent(BaseModel):
+    """Calendar event with location for trip suggestions."""
+    date: str
+    title: str
+    location: str
+
+
+@app.get("/api/calendar/events", response_model=List[CalendarEvent])
+async def get_calendar_events():
+    """
+    Get upcoming calendar events with locations.
+    Requires Google Calendar API credentials to be configured.
+    """
+    # Check if calendar is configured
+    calendar_credentials = os.getenv("GOOGLE_CALENDAR_CREDENTIALS")
+    if not calendar_credentials:
+        raise HTTPException(
+            status_code=501,
+            detail="Calendar integration not configured. Set GOOGLE_CALENDAR_CREDENTIALS in .env"
+        )
+
+    # TODO: Implement Google Calendar API integration
+    # For now, return sample data for development/testing
+    # In production, this would fetch real calendar events
+    sample_events = [
+        {"date": "2025-01-15", "title": "Kundemøde hos TechCorp", "location": "Lyngby Hovedgade 72, 2800 Kgs. Lyngby"},
+        {"date": "2025-01-18", "title": "Workshop hos Microsoft", "location": "Kanalvej 7, 2800 Kgs. Lyngby"},
+        {"date": "2025-01-22", "title": "Salgsmøde", "location": "Vesterbrogade 1, 1620 København V"},
+    ]
+
+    return sample_events
 
 
 @app.on_event("startup")

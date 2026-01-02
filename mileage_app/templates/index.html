@@ -1,188 +1,319 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Korselsgodtgorelse</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      margin: 0; padding: 24px;
-      max-width: 1200px;
-      background: #f8f9fa;
-    }
-    h1 { margin-bottom: 4px; }
-    .subtitle { color: #666; margin-bottom: 24px; }
-
-    .card {
-      background: white;
-      border: 1px solid #e0e0e0;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-    .card h2 { margin-top: 0; margin-bottom: 16px; font-size: 1.1rem; }
-
-    label { display: block; font-size: 0.85rem; color: #555; margin-bottom: 4px; }
-    input, select, button {
-      padding: 10px 12px;
-      margin-bottom: 12px;
-      width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
-    input:focus, select:focus { outline: none; border-color: #0066cc; }
-    button {
-      background: #0066cc;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    button:hover { background: #0052a3; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-    button.secondary { background: #f0f0f0; color: #333; }
-    button.secondary:hover { background: #e0e0e0; }
-    button.danger { background: #dc3545; }
-    button.danger:hover { background: #c82333; }
-    button.small { padding: 6px 12px; font-size: 0.8rem; width: auto; }
-
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-
-    .locations-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .loc-btn {
-      padding: 8px 14px;
-      background: #e8f4fd;
-      border: 1px solid #b3d7f5;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      color: #0066cc;
-      transition: all 0.15s;
-    }
-    .loc-btn:hover { background: #d0ebff; }
-    .loc-btn.selected { background: #0066cc; color: white; border-color: #0066cc; }
-    .loc-btn.home { background: #e8f5e9; border-color: #a5d6a7; color: #2e7d32; }
-    .loc-btn.home.selected { background: #2e7d32; color: white; }
-
-    table { width: 100%; border-collapse: collapse; }
-    th, td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-      font-size: 0.9rem;
-    }
-    th { background: #f8f9fa; font-weight: 600; color: #555; }
-    tr:hover { background: #fafbfc; }
-
-    .summary-box {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-    }
-    .summary-box h3 { margin: 0 0 12px 0; font-size: 1rem; opacity: 0.9; }
-    .summary-stats { display: flex; gap: 32px; flex-wrap: wrap; }
-    .stat { }
-    .stat-value { font-size: 1.8rem; font-weight: 700; }
-    .stat-label { font-size: 0.8rem; opacity: 0.85; }
-
-    .muted { color: #888; }
-    .success { color: #28a745; }
-    .danger { color: #dc3545; }
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      background: #e0e0e0;
-    }
-    .badge.round-trip { background: #e3f2fd; color: #1976d2; }
-
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    .checkbox-row input { width: auto; margin: 0; }
-
-    #status { padding: 8px 0; }
-    @media (max-width: 768px) {
-      .grid, .grid-3 { grid-template-columns: 1fr; }
-      .summary-stats { gap: 16px; }
-    }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1a5fb4">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Automatisk kilometerberegning og kørselsgodtgørelse">
+  <title>Kørselsgodtgørelse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
-  <h1>Korselsgodtgorelse</h1>
-  <p class="subtitle">Automatisk kilometerberegning via Google Routes API</p>
+  <div class="spreadsheet-app">
 
-  <div id="summary-container"></div>
-
-  <div class="card">
-    <h2>Tilf&oslash;j tur</h2>
-
-    <div class="grid">
-      <div>
-        <label>Dato</label>
-        <input id="trip_date" type="date" />
+    <!-- Top toolbar like Google Sheets -->
+    <header class="spreadsheet-header">
+      <div class="spreadsheet-title">
+        <div class="spreadsheet-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/>
+            <line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="2"/>
+            <line x1="9" y1="9" x2="9" y2="21" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="spreadsheet-title-text">
+          <h1>Kørselsgodtgørelse</h1>
+          <span class="spreadsheet-subtitle" id="current-year-label">2026</span>
+        </div>
       </div>
-      <div>
-        <label>Beskrivelse / Form&aring;l</label>
-        <input id="purpose" placeholder="f.eks. Kundemøde, Workshop" />
+      <div class="spreadsheet-toolbar">
+        <button id="btn_add_trip" class="toolbar-btn" title="Tilføj tur (Ctrl+N)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>Tilføj tur</span>
+        </button>
+        <button id="btn_export" class="toolbar-btn" title="Eksporter CSV (Ctrl+E)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Eksporter</span>
+        </button>
+        <button id="btn_calendar" class="toolbar-btn" title="Importer fra kalender">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span>Kalender</span>
+        </button>
+        <div class="toolbar-divider"></div>
+        <div class="toolbar-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="search" id="search-input" placeholder="Søg i ture..." aria-label="Søg">
+        </div>
+      </div>
+    </header>
+
+    <!-- Formula/stats bar -->
+    <div class="formula-bar">
+      <div class="formula-bar-stats">
+        <div class="stat-item">
+          <span class="stat-label">Ture:</span>
+          <span class="stat-value" id="stat-trips">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Total km:</span>
+          <span class="stat-value" id="stat-km">0</span>
+        </div>
+        <div class="stat-item highlight">
+          <span class="stat-label">Godtgørelse:</span>
+          <span class="stat-value" id="stat-amount">0 kr</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Sats:</span>
+          <span class="stat-value" id="stat-rate">3,94 kr/km</span>
+        </div>
+      </div>
+      <div class="formula-bar-filters">
+        <button class="filter-btn active" data-filter="all">Alle</button>
+        <button class="filter-btn" data-filter="round-trip">Tur/retur</button>
+        <button class="filter-btn" data-filter="one-way">Enkelt</button>
       </div>
     </div>
 
-    <label>Fra (v&aelig;lg eller skriv)</label>
-    <div id="origin-locations" class="locations-grid"></div>
-    <input id="origin" placeholder="Adresse, postnummer" />
+    <!-- Main spreadsheet area -->
+    <main class="spreadsheet-main">
+      <div class="spreadsheet-container">
 
-    <label>Til (v&aelig;lg eller skriv)</label>
-    <div id="dest-locations" class="locations-grid"></div>
-    <input id="destination" placeholder="Adresse, postnummer" />
+        <!-- Column headers (sticky) -->
+        <div class="sheet-header">
+          <div class="sheet-col col-date">Dato</div>
+          <div class="sheet-col col-purpose">Beskrivelse</div>
+          <div class="sheet-col col-from">Fra</div>
+          <div class="sheet-col col-to">Til</div>
+          <div class="sheet-col col-km-one">Enkelt</div>
+          <div class="sheet-col col-km">Total</div>
+          <div class="sheet-col col-type">Type</div>
+          <div class="sheet-col col-actions"></div>
+        </div>
 
-    <div class="checkbox-row">
-      <input id="round_trip" type="checkbox" checked />
-      <label for="round_trip" style="margin:0">Tur/retur (fordobler km)</label>
-    </div>
+        <!-- Sheet body with rows -->
+        <div class="sheet-body" id="sheet-body">
+          <!-- Rows populated by JavaScript -->
+        </div>
 
-    <button id="btn_add">Beregn & gem tur</button>
-    <div id="status"></div>
+        <!-- Empty state -->
+        <div id="empty-state" class="sheet-empty hidden">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="9" x2="9" y2="21"/>
+          </svg>
+          <p>Ingen ture i denne måned</p>
+          <button class="btn-add-first" id="empty-add-btn">+ Tilføj første tur</button>
+        </div>
+
+        <!-- Loading state -->
+        <div id="loading-state" class="sheet-loading hidden">
+          <div class="sheet-row skeleton"></div>
+          <div class="sheet-row skeleton"></div>
+          <div class="sheet-row skeleton"></div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Bottom sheet tabs (months) -->
+    <footer class="sheet-tabs-bar">
+      <div class="sheet-tabs-scroll">
+        <nav class="sheet-tabs" id="month-tabs" role="tablist">
+          <!-- Year selector -->
+          <div class="year-selector">
+            <button class="year-nav" id="prev-year" aria-label="Forrige år">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <span class="year-display" id="year-display">2026</span>
+            <button class="year-nav" id="next-year" aria-label="Næste år">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+          <div class="tabs-divider"></div>
+          <!-- Month tabs -->
+          <button class="sheet-tab" data-month="1">Jan</button>
+          <button class="sheet-tab" data-month="2">Feb</button>
+          <button class="sheet-tab" data-month="3">Mar</button>
+          <button class="sheet-tab" data-month="4">Apr</button>
+          <button class="sheet-tab" data-month="5">Maj</button>
+          <button class="sheet-tab" data-month="6">Jun</button>
+          <button class="sheet-tab" data-month="7">Jul</button>
+          <button class="sheet-tab" data-month="8">Aug</button>
+          <button class="sheet-tab" data-month="9">Sep</button>
+          <button class="sheet-tab" data-month="10">Okt</button>
+          <button class="sheet-tab" data-month="11">Nov</button>
+          <button class="sheet-tab" data-month="12">Dec</button>
+          <button class="sheet-tab sheet-tab-all active" data-month="all">Hele året</button>
+        </nav>
+      </div>
+      <div class="sheet-tabs-actions">
+        <button class="tabs-action-btn" id="btn_refresh" title="Opdater">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+
   </div>
 
-  <div class="card">
-    <h2>Ture</h2>
-    <div class="row" style="margin-bottom: 16px;">
-      <input id="year" type="number" style="width: 120px;" />
-      <button id="btn_refresh" class="secondary small">Opdater</button>
-      <button id="btn_export" class="secondary small">Eksporter CSV</button>
-    </div>
+  <!-- Add/Edit Trip Modal -->
+  <div id="trip-modal-backdrop" class="modal-backdrop hidden">
+    <div class="modal trip-modal" role="dialog" aria-labelledby="trip-modal-title" aria-modal="true">
+      <div class="modal-header">
+        <h2 id="trip-modal-title">Tilføj tur</h2>
+        <button class="modal-close" id="trip-modal-close" aria-label="Luk">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="trip-form" autocomplete="off">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="trip_date">Dato</label>
+              <input type="date" id="trip_date" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="purpose">Beskrivelse</label>
+              <input type="text" id="purpose" class="form-input" placeholder="f.eks. Kundemøde" required minlength="2" maxlength="500">
+            </div>
+          </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Dato</th>
-          <th>Beskrivelse</th>
-          <th>Rute</th>
-          <th style="text-align:right">km</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
+          <div class="form-group">
+            <label class="form-label">Fra</label>
+            <div id="origin-locations" class="location-chips"></div>
+            <input type="text" id="origin" class="form-input" placeholder="Adresse, postnummer" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Til</label>
+            <div id="dest-locations" class="location-chips"></div>
+            <input type="text" id="destination" class="form-input" placeholder="Adresse, postnummer" required>
+          </div>
+
+          <!-- Distance Preview -->
+          <div id="distance-preview" class="distance-preview hidden">
+            <div class="distance-preview-content">
+              <span class="distance-preview-label">Estimeret:</span>
+              <span class="distance-preview-value" id="preview-distance">--</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-checkbox">
+              <input type="checkbox" id="round_trip" checked>
+              <span>Tur/retur (fordobler km)</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="trip-cancel">Annuller</button>
+            <button type="submit" class="btn btn-primary" id="btn_add">
+              <span class="btn-text">Gem tur</span>
+              <span class="spinner hidden"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-modal-backdrop" class="modal-backdrop hidden">
+    <div class="modal modal-sm" role="alertdialog" aria-labelledby="delete-modal-title" aria-modal="true">
+      <div class="modal-header">
+        <h2 id="delete-modal-title">Slet tur?</h2>
+      </div>
+      <div class="modal-body">
+        <p>Er du sikker på, at du vil slette denne tur? Handlingen kan ikke fortrydes.</p>
+      </div>
+      <div class="modal-footer">
+        <button id="delete-cancel" class="btn btn-secondary">Annuller</button>
+        <button id="delete-confirm" class="btn btn-danger">Slet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar Suggestions Modal -->
+  <div id="calendar-modal-backdrop" class="modal-backdrop hidden">
+    <div class="modal calendar-modal" role="dialog" aria-labelledby="calendar-modal-title" aria-modal="true">
+      <div class="modal-header">
+        <h2 id="calendar-modal-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Kalender begivenheder
+        </h2>
+        <button class="modal-close" id="calendar-modal-close" aria-label="Luk">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="calendar-hint">Begivenheder med adresser kan tilføjes som ture.</p>
+
+        <div id="calendar-loading" class="calendar-loading hidden">
+          <div class="spinner"></div>
+          <span>Henter begivenheder...</span>
+        </div>
+
+        <div id="calendar-empty" class="calendar-empty hidden">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <p>Ingen begivenheder med adresser fundet.</p>
+        </div>
+
+        <div id="calendar-not-connected" class="calendar-not-connected">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Kalender integration er ikke konfigureret.</p>
+          <p class="calendar-setup-hint">Tilføj GOOGLE_CALENDAR_CREDENTIALS i .env for at aktivere.</p>
+        </div>
+
+        <div id="calendar-events" class="calendar-events hidden">
+          <!-- Events populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Live Region -->
+  <div id="live-region" class="sr-only" aria-live="polite"></div>
 
   <script src="/static/app.js"></script>
 </body>
