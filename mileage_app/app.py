@@ -47,7 +47,10 @@ app = FastAPI(title="Kørselsgodtgørelse App")
 # Use absolute paths for Vercel serverless
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
-app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+
+# Only mount static files if not on Vercel (Vercel serves them separately)
+if not os.getenv("VERCEL"):
+    app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 
 # ---------- Pydantic models ----------
@@ -412,8 +415,11 @@ async def get_calendar_events():
 
 @app.on_event("startup")
 def on_startup():
-    init_db()
-    # Seed saved locations from your Excel history
-    db = next(get_db())
-    seed_locations(db)
-    logger.info("DB initialized with saved locations from your history.")
+    try:
+        init_db()
+        # Seed saved locations from your Excel history
+        db = next(get_db())
+        seed_locations(db)
+        logger.info("DB initialized with saved locations from your history.")
+    except Exception as e:
+        logger.error(f"Startup error (non-fatal on serverless): {e}")
