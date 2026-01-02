@@ -15,7 +15,7 @@ from fastapi.requests import Request
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from db import init_db, get_db, seed_locations, Trip, SavedLocation
+from db import init_db, get_db, seed_locations, Trip, SavedLocation, DB_URL
 
 load_dotenv()
 
@@ -419,6 +419,12 @@ async def get_calendar_events():
     ]
 
     return sample_events
+
+
+@app.get("/api/health")
+def health_check():
+    """Simple health check that doesn't need DB."""
+    return {"status": "ok", "db_url_type": "postgres" if "postgres" in str(DB_URL).lower() else "sqlite"}
 
 
 @app.on_event("startup")
