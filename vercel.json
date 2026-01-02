@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "mileage_app/app.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "mileage_app/static/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "mileage_app/templates/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "mileage_app/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "mileage_app/app.py"
+    }
+  ]
+}
