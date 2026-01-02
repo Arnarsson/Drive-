@@ -41,17 +41,53 @@ class SavedLocation(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-# Your frequent destinations from Koerselsgodtgoerelse.xlsx
+# Your frequent destinations from Koerselsgodtgoerelse.xlsx + Atlas Group
 DEFAULT_LOCATIONS = [
+    # Home
     {"name": "Hjem", "address": "Platanvej 7", "postal_code": "2791", "is_home": True},
+
+    # Most frequent work destinations
     {"name": "elbiil.dk", "address": "Klausdalsbrovej 601", "postal_code": "2750", "is_home": False},
     {"name": "Smedeholm (Herlev)", "address": "Smedeholm 12", "postal_code": "2730", "is_home": False},
     {"name": "Talent Garden", "address": "Danneskiold-Samsøes Allé 41", "postal_code": "1434", "is_home": False},
+    {"name": "FLEXeCHARGE", "address": "Rahbeks Allé 21", "postal_code": "1801", "is_home": False},
     {"name": "Bigum & Co", "address": "Rued Langgaards Vej 8", "postal_code": "2300", "is_home": False},
-    {"name": "FLEXeCHARGE", "address": "Rahbeks Alle 21", "postal_code": "1801", "is_home": False},
     {"name": "Kanalholmen", "address": "Kanalholmen 1", "postal_code": "2650", "is_home": False},
     {"name": "Højbro Plads", "address": "Højbro Plads 5-7", "postal_code": "1200", "is_home": False},
     {"name": "Erhvervshus Hovedstaden", "address": "Fruebjergvej 3", "postal_code": "2100", "is_home": False},
+
+    # New: Atlas Group
+    {"name": "Atlas Group", "address": "Store Kongensgade 81", "postal_code": "1264", "is_home": False},
+
+    # Copenhagen locations
+    {"name": "Fuglevangsvej", "address": "Fuglevangsvej 11", "postal_code": "1962", "is_home": False},
+    {"name": "Nannasgade", "address": "Nannasgade 28", "postal_code": "2200", "is_home": False},
+    {"name": "Islands Brygge", "address": "Islands Brygge 79b", "postal_code": "2300", "is_home": False},
+    {"name": "Center Blvd", "address": "Center Blvd. 5", "postal_code": "2300", "is_home": False},
+    {"name": "Frederiksborggade", "address": "Frederiksborggade 14", "postal_code": "1360", "is_home": False},
+    {"name": "Birkedommervej", "address": "Birkedommervej 31", "postal_code": "2400", "is_home": False},
+    {"name": "Bryghusgade", "address": "Bryghusgade 8", "postal_code": "1473", "is_home": False},
+    {"name": "Admiralgade", "address": "Admiralgade 25", "postal_code": "1066", "is_home": False},
+    {"name": "Overgaden", "address": "Overgaden Oven Vandet 90", "postal_code": "1415", "is_home": False},
+    {"name": "Roskildevej", "address": "Roskildevej 46", "postal_code": "2000", "is_home": False},
+    {"name": "IDA Conference", "address": "Kalvebod Brygge 31", "postal_code": "1560", "is_home": False},
+    {"name": "DTU", "address": "Anker Engelunds Vej 1, Bygning 101A", "postal_code": "2800", "is_home": False},
+
+    # Dragør area
+    {"name": "Kirkevej (Dragør)", "address": "Kirkevej 7", "postal_code": "2791", "is_home": False},
+    {"name": "Framehouse", "address": "A. P. Møllers Allé 43B", "postal_code": "2791", "is_home": False},
+
+    # Other
+    {"name": "Oscar Pettifords Vej", "address": "Oscar Pettifords Vej 15", "postal_code": "2450", "is_home": False},
+    {"name": "Werner Valeur", "address": "Werner Valeur", "postal_code": "2840", "is_home": False},
+
+    # Jylland
+    {"name": "Kolding Storcenter", "address": "Kolding Storcenter", "postal_code": "6000", "is_home": False},
+    {"name": "Vejen", "address": "Vejen Rådhusplads", "postal_code": "6600", "is_home": False},
+    {"name": "Frederikshavn", "address": "Nordhavnsvej 1", "postal_code": "9900", "is_home": False},
+
+    # Fyn
+    {"name": "Faaborg", "address": "Faaborgvej 10", "postal_code": "5250", "is_home": False},
 ]
 
 
