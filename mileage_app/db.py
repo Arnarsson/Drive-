@@ -4,6 +4,7 @@ from sqlalchemy import (
     create_engine, Column, Integer, String, Float, Boolean, Date, DateTime
 )
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 # Support Vercel Postgres (POSTGRES_URL) or custom DB_URL or SQLite fallback
 DB_URL = os.getenv("POSTGRES_URL") or os.getenv("DB_URL", "sqlite:///./mileage.db")
@@ -16,7 +17,17 @@ if DB_URL.startswith("postgres://"):
 if os.getenv("VERCEL") and DB_URL.startswith("sqlite:///./"):
     DB_URL = "sqlite:///:memory:"
 
-engine = create_engine(DB_URL, connect_args={"check_same_thread": False} if DB_URL.startswith("sqlite") else {})
+# For in-memory SQLite, use StaticPool to share the single connection across sessions
+if DB_URL == "sqlite:///:memory:":
+    engine = create_engine(
+        DB_URL,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+elif DB_URL.startswith("sqlite"):
+    engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
+else:
+    engine = create_engine(DB_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
