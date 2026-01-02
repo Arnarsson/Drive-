@@ -46,11 +46,19 @@ app = FastAPI(title="Kørselsgodtgørelse App")
 
 # Use absolute paths for Vercel serverless
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
+# Initialize templates (required for HTML rendering)
+try:
+    templates = Jinja2Templates(directory=TEMPLATES_DIR)
+except Exception as e:
+    logger.error(f"Failed to load templates from {TEMPLATES_DIR}: {e}")
+    templates = None
 
 # Only mount static files if not on Vercel (Vercel serves them separately)
-if not os.getenv("VERCEL"):
-    app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+if not os.getenv("VERCEL") and os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 # ---------- Pydantic models ----------
