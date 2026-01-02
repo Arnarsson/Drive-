@@ -1,9 +1,12 @@
-import sys
-import os
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
-# Add mileage_app directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+app = FastAPI()
 
-from app import app
+@app.get("/")
+def home():
+    return HTMLResponse("<h1>Mileage App Works!</h1><p>Basic test successful.</p>")
 
-handler = app
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}
