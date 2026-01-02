@@ -44,8 +44,10 @@ DK_RATES = {
 # ---------- FastAPI ----------
 app = FastAPI(title="Kørselsgodtgørelse App")
 
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Use absolute paths for Vercel serverless
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 
 # ---------- Pydantic models ----------
