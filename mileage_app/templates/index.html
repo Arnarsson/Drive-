@@ -1,80 +1,183 @@
 <!doctype html>
-<html>
+<html lang="da">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mileage App</title>
+  <title>Korselsgodtgorelse</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; max-width: 1100px; }
-    input, select, button { padding: 10px; margin: 6px 0; width: 100%; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      margin: 0; padding: 24px;
+      max-width: 1200px;
+      background: #f8f9fa;
+    }
+    h1 { margin-bottom: 4px; }
+    .subtitle { color: #666; margin-bottom: 24px; }
+
+    .card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card h2 { margin-top: 0; margin-bottom: 16px; font-size: 1.1rem; }
+
+    label { display: block; font-size: 0.85rem; color: #555; margin-bottom: 4px; }
+    input, select, button {
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    input:focus, select:focus { outline: none; border-color: #0066cc; }
+    button {
+      background: #0066cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover { background: #0052a3; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    button.secondary { background: #f0f0f0; color: #333; }
+    button.secondary:hover { background: #e0e0e0; }
+    button.danger { background: #dc3545; }
+    button.danger:hover { background: #c82333; }
+    button.small { padding: 6px 12px; font-size: 0.8rem; width: auto; }
+
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .row { display:flex; gap: 12px; align-items:center; }
-    table { width:100%; border-collapse: collapse; margin-top: 16px; }
-    th, td { border-bottom: 1px solid #ddd; padding: 10px; text-align:left; vertical-align: top; }
-    .muted { color:#666; }
-    .danger { color:#b00020; }
-    .card { border: 1px solid #eee; padding: 16px; border-radius: 10px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+    .locations-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .loc-btn {
+      padding: 8px 14px;
+      background: #e8f4fd;
+      border: 1px solid #b3d7f5;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: #0066cc;
+      transition: all 0.15s;
+    }
+    .loc-btn:hover { background: #d0ebff; }
+    .loc-btn.selected { background: #0066cc; color: white; border-color: #0066cc; }
+    .loc-btn.home { background: #e8f5e9; border-color: #a5d6a7; color: #2e7d32; }
+    .loc-btn.home.selected { background: #2e7d32; color: white; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 0.9rem;
+    }
+    th { background: #f8f9fa; font-weight: 600; color: #555; }
+    tr:hover { background: #fafbfc; }
+
+    .summary-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .summary-box h3 { margin: 0 0 12px 0; font-size: 1rem; opacity: 0.9; }
+    .summary-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .stat { }
+    .stat-value { font-size: 1.8rem; font-weight: 700; }
+    .stat-label { font-size: 0.8rem; opacity: 0.85; }
+
+    .muted { color: #888; }
+    .success { color: #28a745; }
+    .danger { color: #dc3545; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      background: #e0e0e0;
+    }
+    .badge.round-trip { background: #e3f2fd; color: #1976d2; }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .checkbox-row input { width: auto; margin: 0; }
+
+    #status { padding: 8px 0; }
+    @media (max-width: 768px) {
+      .grid, .grid-3 { grid-template-columns: 1fr; }
+      .summary-stats { gap: 16px; }
+    }
   </style>
 </head>
 <body>
-  <h1>Mileage App</h1>
-  <p class="muted">Enter trips, auto-calculate km via Google Routes API, export CSV.</p>
+  <h1>Korselsgodtgorelse</h1>
+  <p class="subtitle">Automatisk kilometerberegning via Google Routes API</p>
+
+  <div id="summary-container"></div>
 
   <div class="card">
-    <h2>Add trip</h2>
+    <h2>Tilf&oslash;j tur</h2>
+
     <div class="grid">
       <div>
-        <label>Date</label>
+        <label>Dato</label>
         <input id="trip_date" type="date" />
       </div>
       <div>
-        <label>Travel mode</label>
-        <select id="travel_mode">
-          <option value="DRIVE">DRIVE</option>
-          <option value="WALK">WALK</option>
-          <option value="BICYCLE">BICYCLE</option>
-          <option value="TRANSIT">TRANSIT</option>
-        </select>
+        <label>Beskrivelse / Form&aring;l</label>
+        <input id="purpose" placeholder="f.eks. Kundemøde, Workshop" />
       </div>
     </div>
 
-    <label>Purpose (e.g., client meeting, Bigum, workshop)</label>
-    <input id="purpose" placeholder="Purpose" />
+    <label>Fra (v&aelig;lg eller skriv)</label>
+    <div id="origin-locations" class="locations-grid"></div>
+    <input id="origin" placeholder="Adresse, postnummer" />
 
-    <div class="grid">
-      <div>
-        <label>From</label>
-        <input id="origin" placeholder="e.g., Platanvej 7, 2791 Dragor" />
-      </div>
-      <div>
-        <label>To</label>
-        <input id="destination" placeholder="e.g., St. Kongensgade 81D, 1264 Kobenhavn" />
-      </div>
+    <label>Til (v&aelig;lg eller skriv)</label>
+    <div id="dest-locations" class="locations-grid"></div>
+    <input id="destination" placeholder="Adresse, postnummer" />
+
+    <div class="checkbox-row">
+      <input id="round_trip" type="checkbox" checked />
+      <label for="round_trip" style="margin:0">Tur/retur (fordobler km)</label>
     </div>
 
-    <div class="row">
-      <input id="round_trip" type="checkbox" style="width:auto" />
-      <label for="round_trip">Round trip</label>
-    </div>
-
-    <button id="btn_add">Add & calculate</button>
-    <div id="status" class="muted"></div>
-    <div id="error" class="danger"></div>
+    <button id="btn_add">Beregn & gem tur</button>
+    <div id="status"></div>
   </div>
 
-  <div class="card" style="margin-top:16px;">
-    <h2>Trips</h2>
-    <div class="row">
-      <input id="year" type="number" style="width:160px" />
-      <button id="btn_refresh" style="width:auto;">Refresh</button>
-      <button id="btn_export" style="width:auto;">Export CSV</button>
+  <div class="card">
+    <h2>Ture</h2>
+    <div class="row" style="margin-bottom: 16px;">
+      <input id="year" type="number" style="width: 120px;" />
+      <button id="btn_refresh" class="secondary small">Opdater</button>
+      <button id="btn_export" class="secondary small">Eksporter CSV</button>
     </div>
-    <div id="summary" class="muted"></div>
 
     <table>
       <thead>
         <tr>
-          <th>Date</th><th>Purpose</th><th>From - To</th><th>km</th><th></th>
+          <th>Dato</th>
+          <th>Beskrivelse</th>
+          <th>Rute</th>
+          <th style="text-align:right">km</th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
