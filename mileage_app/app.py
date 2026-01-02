@@ -427,6 +427,19 @@ def health_check():
     return {"status": "ok", "db_url_type": "postgres" if "postgres" in str(DB_URL).lower() else "sqlite"}
 
 
+@app.get("/api/debug")
+def debug_db():
+    """Debug endpoint to test database."""
+    from db import SessionLocal, SavedLocation
+    try:
+        db = SessionLocal()
+        count = db.query(SavedLocation).count()
+        db.close()
+        return {"status": "ok", "location_count": count}
+    except Exception as e:
+        return {"status": "error", "error": str(e), "type": type(e).__name__}
+
+
 @app.on_event("startup")
 def on_startup():
     try:
