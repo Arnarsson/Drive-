@@ -5,7 +5,16 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DB_URL = os.getenv("DB_URL", "sqlite:///./mileage.db")
+# Support Vercel Postgres (POSTGRES_URL) or custom DB_URL or SQLite fallback
+DB_URL = os.getenv("POSTGRES_URL") or os.getenv("DB_URL", "sqlite:///./mileage.db")
+
+# Vercel Postgres uses postgres:// but SQLAlchemy needs postgresql://
+if DB_URL.startswith("postgres://"):
+    DB_URL = DB_URL.replace("postgres://", "postgresql://", 1)
+
+# For serverless (Vercel), use in-memory SQLite if no DB configured
+if os.getenv("VERCEL") and DB_URL.startswith("sqlite:///./"):
+    DB_URL = "sqlite:///:memory:"
 
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False} if DB_URL.startswith("sqlite") else {})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
