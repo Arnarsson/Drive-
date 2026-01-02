@@ -1,28 +1,23 @@
 {
   "version": 2,
-  "rootDirectory": "mileage_app",
   "builds": [
     {
-      "src": "api/index.py",
+      "src": "mileage_app/api/index.py",
       "use": "@vercel/python"
     },
     {
-      "src": "static/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "templates/**",
+      "src": "mileage_app/static/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/static/$1"
+      "dest": "/mileage_app/static/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.py"
+      "dest": "/mileage_app/api/index.py"
     }
   ]
 }
