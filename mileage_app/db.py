@@ -118,3 +118,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+# Auto-initialize on import (required for serverless)
+init_db()
