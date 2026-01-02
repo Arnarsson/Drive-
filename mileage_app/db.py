@@ -122,3 +122,14 @@ def get_db():
 
 # Auto-initialize on import (required for serverless)
 init_db()
+
+# Also seed locations on import for serverless
+def _seed_on_import():
+    """Seed default locations at import time for serverless."""
+    db = SessionLocal()
+    try:
+        seed_locations(db)
+    finally:
+        db.close()
+
+_seed_on_import()
