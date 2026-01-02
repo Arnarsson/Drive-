@@ -56,8 +56,8 @@ except Exception as e:
     logger.error(f"Failed to load templates from {TEMPLATES_DIR}: {e}")
     templates = None
 
-# Only mount static files if not on Vercel (Vercel serves them separately)
-if not os.getenv("VERCEL") and os.path.exists(STATIC_DIR):
+# Mount static files
+if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
